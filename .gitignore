@@ -11,7 +11,7 @@ yarn-error.log
 .husky/_
 .husky/.gitignore
 # TypeScript
-build/
+dist/
 *.tsbuildinfo
 # JetBrains
 .idea/
