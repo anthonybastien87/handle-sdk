@@ -1,0 +1,17 @@
+# MacOS
+.DS_Store
+# Yarn
+node_modules
+yarn-error.log
+# Config
+.env
+# Editor Setup
+.vscode
+# Husky
+.husky/_
+.husky/.gitignore
+# TypeScript
+dist/
+*.tsbuildinfo
+# JetBrains
+.idea/
