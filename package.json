@@ -1,0 +1,13 @@
+{
+  "name": "handle-sdk",
+  "version": "0.0.1",
+  "description": "handle.fi sdk",
+  "main": "dist/index.js",
+  "repository": "https://github.com/handle-fi/handle-sdk",
+  "author": "handle.fi",
+  "license": "BUSL-1.1",
+  "private": true,
+  "dependencies": {
+    "typescript": "^4.3.2"
+  }
+}
