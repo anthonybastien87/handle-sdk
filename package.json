@@ -2,11 +2,15 @@
   "name": "handle-sdk",
   "version": "0.0.1",
   "description": "handle.fi sdk",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "repository": "https://github.com/handle-fi/handle-sdk",
   "author": "handle.fi",
   "license": "BUSL-1.1",
-  "private": true,
+  "private": false,
+  "scripts": {
+      "build": "npx tsc",
+      "prepublish": "tsc"
+  },
   "dependencies": {
     "typescript": "^4.3.2"
   }
