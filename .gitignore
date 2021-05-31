@@ -13,3 +13,5 @@ yarn-error.log
 # TypeScript
 build/
 *.tsbuildinfo
+# JetBrains
+.idea/
