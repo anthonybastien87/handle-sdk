@@ -74,22 +74,30 @@ export class Protocol {
   public async loadCollateralTokens() {
     const indexedTokens = await readCollateralTokens(this.sdk.isKovan);
     this.collateralTokens = [];
+    const promises = [];
     for (let indexed of indexedTokens) {
-      this.collateralTokens.push({
-        address: indexed.address,
-        symbol: indexed.symbol,
-        name: indexed.name,
-        // @ts-ignore TODO: index this
-        decimals: await this.sdk.contracts[indexed.symbol].decimals(),
-        rate: await this.sdk.contracts.handle.getTokenPrice(indexed.address),
-        // TODO: index this
-        interestRate: await this.sdk.contracts.handle.interestRate(indexed.address),
-        mintCollateralRatio: indexed.mintCollateralRatio,
-        liquidationFee: indexed.liquidationFee,
-        totalBalance: indexed.totalBalance,
-        isValid: indexed.isValid
-      });
+      promises.push(
+        new Promise(async (resolve) => {
+          this.collateralTokens.push({
+            address: indexed.address,
+            symbol: indexed.symbol,
+            name: indexed.name,
+            // @ts-ignore TODO: index this
+            decimals: await this.sdk.contracts[indexed.symbol].decimals(),
+            rate: await this.sdk.contracts.handle.getTokenPrice(indexed.address),
+            // TODO: index this
+            interestRate: (await this.sdk.contracts.handle.getCollateralDetails(indexed.address))
+              .interestRate,
+            mintCollateralRatio: indexed.mintCollateralRatio,
+            liquidationFee: indexed.liquidationFee,
+            totalBalance: indexed.totalBalance,
+            isValid: indexed.isValid
+          });
+          resolve(null);
+        })
+      );
     }
+    await Promise.all(promises);
   }
 
   public getFxTokenBySymbol(symbol: fxTokens): fxToken {
