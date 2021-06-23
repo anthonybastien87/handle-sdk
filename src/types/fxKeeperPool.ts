@@ -1,5 +1,7 @@
 import { ethers } from "ethers";
 import {CollateralToken} from "./CollateralToken";
+import {SDK} from "./SDK";
+import {fxTokens} from "./ProtocolTokens";
 
 /**
  * Class to interact with a fxKeeperPool for a specific fxToken.
@@ -8,23 +10,36 @@ import {CollateralToken} from "./CollateralToken";
  * parameters with the instance token.
  */
 export class fxKeeperPool {
-  public token: string;
   private contract: ethers.Contract;
+  /** fxToken contract */
+  private erc20: ethers.Contract;
+  public token: string;
   public gasLimit: ethers.BigNumber;
 
   /**
+   * @param sdk The SDK instance.
    * @param token The pool fxToken address.
    * @param contract The keeper pool contract instance.
    */
-  public constructor(token: string, contract: ethers.Contract) {
-    this.token = token;
+  public constructor(sdk: SDK, token: fxTokens, contract: ethers.Contract) {
+    this.erc20 = sdk.contracts[token];
+    this.token = this.erc20.address;
     this.contract = contract;
     this.gasLimit = ethers.BigNumber.from("750000");
+  }
+  
+  private async ensureAllowance(amount: ethers.BigNumber) {
+    const allowance: ethers.BigNumber = await this.erc20
+      .allowance(this.contract.address);
+    if (allowance.gte(amount))
+      return;
+    await (await this.erc20.approve(this.contract.address, amount)).wait(1);
   }
   
   public async stake(amount: ethers.BigNumber) {
     if (amount.lt(0))
       throw new Error("Amount must be greater than 0");
+    await this.ensureAllowance(amount);
     return await this.contract.stake(amount, this.token, {
       gasLimit: this.gasLimit
     });
