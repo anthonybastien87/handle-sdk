@@ -12,8 +12,12 @@ export class fxKeeperPool {
   public token: string;
   private contract: ethers.Contract;
 
-  private constructor(token: fxToken, contract: ethers.Contract) {
-    this.token = token.address;
+  /**
+   * @param token The pool fxToken address.
+   * @param contract The keeper pool contract instance.
+   */
+  public constructor(token: string, contract: ethers.Contract) {
+    this.token = token;
     this.contract = contract;
   }
   
