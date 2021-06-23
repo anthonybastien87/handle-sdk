@@ -2,9 +2,10 @@
 import { ethers } from "ethers";
 import { Protocol } from "./Protocol";
 import { Abi, Config } from "./Config";
-import { CollateralTokens, fxTokens } from "./ProtocolTokens";
+import {CollateralTokens, fxTokens, fxTokensArray} from "./ProtocolTokens";
 import { Vault } from "./Vault";
 import { GraphQLClient } from "graphql-request/dist";
+import {fxKeeperPool} from "./fxKeeperPool";
 
 /** Handle SDK object */
 export class SDK {
@@ -28,6 +29,7 @@ export class SDK {
     [CollateralTokens.WBTC]: ethers.Contract;
     [CollateralTokens.DAI]: ethers.Contract;
   };
+  public keeperPools: {[fxTokenSymbol: string]: fxKeeperPool};
   public gqlClient: GraphQLClient;
 
   private constructor(providerOrSigner: ethers.providers.Provider | ethers.Signer, gqlUrl: string) {
@@ -40,6 +42,7 @@ export class SDK {
     }
     this.version = packageJson.version;
     this.vaults = [];
+    this.keeperPools = {};
     this.gqlClient = new GraphQLClient(gqlUrl);
   }
 
@@ -62,6 +65,7 @@ export class SDK {
     const sdk = new SDK(providerOrSigner, networkConfig.theGraphEndpoint);
     sdk.network = (await sdk.provider.getNetwork()).name;
     await sdk.loadContracts(networkConfig.handleAddress);
+    sdk.initialiseKeeperPools();
     sdk.protocol = await Protocol.from(sdk);
     return sdk;
   }
@@ -186,5 +190,16 @@ export class SDK {
       );
     }
     await Promise.all(promises);
+  }
+  
+  private initialiseKeeperPools() {
+    for (let fxTokenSymbol of fxTokensArray) {
+      const token = fxTokenSymbol as fxTokens;
+      const address = this.contracts[token].address;
+      this.keeperPools[token] = new fxKeeperPool(
+        address,
+        this.contracts.fxKeeperPool
+      );
+    }
   }
 }
