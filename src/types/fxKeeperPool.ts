@@ -1,4 +1,3 @@
-import { fxToken } from "./fxToken";
 import { ethers } from "ethers";
 import {CollateralToken} from "./CollateralToken";
 
