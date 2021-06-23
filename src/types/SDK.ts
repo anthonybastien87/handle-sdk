@@ -195,9 +195,9 @@ export class SDK {
   private initialiseKeeperPools() {
     for (let fxTokenSymbol of fxTokensArray) {
       const token = fxTokenSymbol as fxTokens;
-      const address = this.contracts[token].address;
       this.keeperPools[token] = new fxKeeperPool(
-        address,
+        this,
+        token,
         this.contracts.fxKeeperPool
       );
     }
