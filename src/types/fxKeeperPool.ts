@@ -27,10 +27,14 @@ export class fxKeeperPool {
     this.contract = contract;
     this.gasLimit = ethers.BigNumber.from("750000");
   }
-  
+
+  /**
+   * Sets allowance to pool fxToken if needed.
+   * Requires erc20 contract to be connected to signer.
+   */
   private async ensureAllowance(amount: ethers.BigNumber) {
     const allowance: ethers.BigNumber = await this.erc20
-      .allowance(this.contract.address);
+      .allowance(await this.erc20.signer.getAddress(), this.contract.address);
     if (allowance.gte(amount))
       return;
     await (await this.erc20.approve(this.contract.address, amount)).wait(1);
