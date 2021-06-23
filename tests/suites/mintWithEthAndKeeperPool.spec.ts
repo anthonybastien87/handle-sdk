@@ -4,11 +4,13 @@ import { Vault } from "../../src/types/Vault";
 import { fxTokens } from "../../src/types/ProtocolTokens";
 import { ethers } from "ethers";
 import { getSDK } from "../setupTests";
+import {fxKeeperPool} from "../../src";
 
 let sdk: SDK;
 let vault: Vault;
+let keeperPool: fxKeeperPool;
 
-describe("Vault: mintWithEth", function () {
+describe("Vault: mintWithEth, fxKeeperPool", function () {
   beforeAll(() => {
     sdk = getSDK();
   });
@@ -16,6 +18,8 @@ describe("Vault: mintWithEth", function () {
     // @ts-ignore
     const account = await sdk.signer.getAddress();
     vault = await Vault.from(account, fxTokens.fxAUD, sdk);
+    keeperPool = sdk.keeperPools[fxTokens.fxAUD];
+    expect(keeperPool).not.toBeNull();
   });
   it("Should mint with ether as collateral", async () => {
     await vault.mintWithEth(
@@ -24,5 +28,15 @@ describe("Vault: mintWithEth", function () {
       false
     );
     expect(vault.debt.gt(0)).toBeTruthy();
+  });
+  it("Should allow to stake fxTokens in keeper pool", async() => {
+    await keeperPool.stake(ethers.BigNumber.from("10")); // 10 wei.
+  });
+  it("Should return balanceOfStake from keeper pool instance", async() => {
+    const balanceOfStake = await keeperPool.balanceOfStake(vault.account);
+    expect(balanceOfStake.gt(0)).toBeTruthy();
+  });
+  it("Should allow to unstake fxTokens from keeper pool", async() => {
+    await keeperPool.unstake(ethers.BigNumber.from("10")); // 10 wei.
   });
 });
