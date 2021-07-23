@@ -6,6 +6,7 @@ import { CollateralTokens, fxTokens, fxTokensArray } from "./ProtocolTokens";
 import { Vault } from "./Vault";
 import { GraphQLClient } from "graphql-request/dist";
 import { fxKeeperPool } from "./fxKeeperPool";
+import { readTokenRegistry } from "../readers/tokenRegistry";
 
 /** Handle SDK object */
 export class SDK {
@@ -156,10 +157,12 @@ export class SDK {
       promises.push(setContract(contractsToLoad[i]));
     }
     // Load ERC20s for fxTokens and collateral tokens.
-    const [fxTokens, collateralTokens] = await Promise.all([
-      this.contracts.handle.getAllFxTokens(),
-      this.contracts.handle.getAllCollateralTypes()
-    ]);
+    const { fxTokens, collateralTokens } = await readTokenRegistry(
+      this.gqlClient,
+      handle
+    );
+    if (!(fxTokens?.length > 0))
+      throw new Error("Could not fetch fxTokens from Handle subgraph");
     const erc20s = [...fxTokens, ...collateralTokens];
     for (let erc20 of erc20s) {
       const contract = new ethers.Contract(
