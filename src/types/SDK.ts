@@ -62,16 +62,18 @@ export class SDK {
     handle?: string,
     subgraphEndpoint?: string
   ): Promise<SDK> {
-    let network: string;
     // Validate provider/signer object.
     const isSigner = ethers.Signer.isSigner(signerOrProvider);
     const provider: ethers.providers.Provider | undefined = isSigner
       ? (signerOrProvider as ethers.Signer).provider
       : (signerOrProvider as ethers.providers.Provider);
     if (!ethers.providers.Provider.isProvider(provider)) throw new Error(providerError);
-    network = (await provider.getNetwork()).name;
     // Validate that network is supported.
-    const networkConfig = SDK.getValidatedNetworkConfig(network, handle, subgraphEndpoint);
+    const networkConfig = SDK.getValidatedNetworkConfig(
+      await provider.getNetwork(),
+      handle,
+      subgraphEndpoint
+    );
     const sdk = new SDK(signerOrProvider, networkConfig.theGraphEndpoint);
     sdk.network = (await sdk.provider.getNetwork()).name;
     await sdk.loadContracts(networkConfig.handleAddress);
@@ -109,16 +111,16 @@ export class SDK {
 
   /**
    * Ensures all the correct parameters are passed to the SDK via the NetworkConfig object before initialisation.
-   * @param network The network name.
+   * @param network The network object.
    * @param handle The handle contract address.
    * @param subgraphEndpoint The subgraph endpoint URL.
    */
   private static getValidatedNetworkConfig(
-    network: string,
+    network: ethers.providers.Network,
     handle?: string,
     subgraphEndpoint?: string
   ) {
-    const defaultConfig = Config.getNetworkConfigByName(network);
+    const defaultConfig = Config.getNetworkConfig(network);
     const handleAddress = handle ?? defaultConfig.handleAddress;
     if (handleAddress == null)
       throw new Error(
@@ -132,7 +134,7 @@ export class SDK {
           " Please pass this (otherwise optional) parameter when creating the SDK object."
       );
     return {
-      networkName: network,
+      networkName: network.name,
       handleAddress,
       theGraphEndpoint
     };
