@@ -6,6 +6,8 @@ import { IndexedVaultData, queryVaults } from "../readers/vault";
 import { CollateralTokens, fxTokens } from "./ProtocolTokens";
 import { tokenAddressToFxToken } from "./utils";
 
+// TODO: A WebSocket connection to the graph node must be maintained so that whenever
+// a vault instance has a state change it can be properly updated.
 export class Vault {
   private sdk: SDK;
   /** Address for the owner of the vault */
@@ -23,6 +25,11 @@ export class Vault {
     /** Always 80% of the minting ratio, or the minimum possible value of 110% */
     liquidation: ethers.BigNumber;
   };
+  public collateralRatio: ethers.BigNumber;
+  public minimumRatio: ethers.BigNumber;
+  public isRedeemable: boolean;
+  public isLiquidatable: boolean;
+  public liquidationFee: ethers.BigNumber;
 
   constructor(account: string, token: fxTokens, sdk: SDK) {
     const fxToken = sdk.protocol.getFxTokenBySymbol(token);
@@ -36,11 +43,16 @@ export class Vault {
     this.collateralAsEth = ethers.constants.Zero;
     this.freeCollateralAsEth = ethers.constants.Zero;
     this.redeemableTokens = ethers.constants.Zero;
+    this.collateralRatio = ethers.constants.Zero;
+    this.minimumRatio = ethers.constants.Zero;
+    this.isRedeemable = false;
+    this.isLiquidatable = false;
     this.ratios = {
       current: ethers.constants.Zero,
       minting: ethers.constants.Zero,
       liquidation: ethers.constants.Zero
     };
+    this.liquidationFee = ethers.constants.Zero;
   }
 
   public static async query(sdk: SDK, filter: any): Promise<Vault[]> {
@@ -70,10 +82,14 @@ export class Vault {
       vaultData ||
       (
         await queryVaults(this.sdk.gqlClient, {
-          account: this.account,
-          fxToken: this.token.address
+          where: {
+            account: this.account,
+            fxToken: this.token.address
+          }
         })
       )[0];
+
+    if (data == null) return;
 
     // Update debt.
     this.debt = data.debt;
@@ -88,11 +104,18 @@ export class Vault {
         token: collateralToken,
         amount: token.amount
       });
-      this.collateralAsEth = this.collateralAsEth.add(
-        token.amount.mul(collateralToken.rate.div(ethers.constants.WeiPerEther))
-      );
     }
+    this.collateralAsEth = data.collateralAsEther;
+    this.collateralRatio = data.collateralRatio;
+    this.minimumRatio = data.minimumRatio;
+    this.isRedeemable = data.isRedeemable;
+    this.isLiquidatable = data.isLiquidatable;
     if (this.collateralAsEth.eq(0)) return;
+    // TODO: calculate collateral shares locally to remove contract calls
+    this.liquidationFee = await this.sdk.contracts.vaultLibrary.getLiquidationFee(
+      this.account,
+      this.token.address
+    );
     // Set minting ratio.
     this.ratios.minting = await this.sdk.contracts.vaultLibrary.getMinimumRatio(
       this.account,
@@ -102,7 +125,7 @@ export class Vault {
     this.ratios.current = this.debtAsEth.gt(0)
       ? this.collateralAsEth.mul(ethers.constants.WeiPerEther).div(this.debtAsEth)
       : ethers.constants.Zero;
-    this.ratios.liquidation = this.ratios.current.mul("80").div("100");
+    this.ratios.liquidation = this.ratios.minting.mul("80").div("100");
     const minLiquidationRatio = ethers.utils.parseEther("1.1");
     if (this.ratios.liquidation.lt(minLiquidationRatio))
       this.ratios.liquidation = minLiquidationRatio;
@@ -193,7 +216,7 @@ export class Vault {
 
   public async depositCollateral(
     amount: ethers.BigNumber,
-    collateralToken: CollateralTokens,
+    collateralToken: CollateralTokens | "ETH",
     returnTxData: boolean = false,
     gasLimit?: ethers.BigNumber,
     gasPrice?: ethers.BigNumber,
@@ -205,7 +228,7 @@ export class Vault {
       ? this.sdk.contracts.treasury
       : this.sdk.contracts.treasury.populateTransaction;
 
-    if (collateralToken === CollateralTokens.WETH) {
+    if (collateralToken === "ETH") {
       return await func.depositCollateralETH(
         this.account,
         this.token.address,
