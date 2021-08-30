@@ -1,10 +1,16 @@
 import axios, { AxiosInstance } from "axios";
 import { BigNumber } from "ethers";
+import homestead from "../../tokens/homestead.json";
+import polygon from "../../tokens/polygon.json";
 
 type Token = {
   symbol: string;
+  name: string;
   address: string;
   decimals: number;
+  icon: string;
+  highlight: boolean;
+  displayDecimals: number;
 };
 
 type SupportedNetwork = "homestead" | "kovan" | "polygon";
@@ -25,6 +31,7 @@ const HANDLE_FEE_ADDRESS = "0x19835c8126d1c56c83A746DfDc9738Bb4a987B9B";
 export class Convert {
   private client: AxiosInstance;
   private tokenAddressToType: { [key: string]: string } | undefined;
+  private tokenList: Token[];
 
   constructor(network: SupportedNetwork) {
     const baseURL = `https://${network === "homestead" ? "" : network + "."}api.0x.org`;
@@ -35,18 +42,13 @@ export class Convert {
         "Cache-Control": "no-store"
       }
     });
+
+    this.tokenList = network === "polygon" ? polygon : homestead;
   }
 
-  public getTokens = async (): Promise<Token[]> => {
-    const { data } = await this.client.get<{
-      records: {
-        symbol: string;
-        address: string;
-        decimals: number;
-      }[];
-    }>("/swap/v1/tokens");
-    await this.setTokenAddressToType(data.records);
-    return data.records;
+  public getTokens = async () => {
+    await this.setTokenAddressToType(this.tokenList);
+    return this.tokenList;
   };
 
   public getQuote = async (
