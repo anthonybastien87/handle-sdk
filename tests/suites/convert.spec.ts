@@ -33,7 +33,7 @@ describe("Convert", function () {
   it("Should fetch price data for a trade", async () => {
     const priceResult = await convert.getQuote(
       "ETH",
-      "0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa",
+      "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       ethers.utils.parseEther("1"),
       undefined,
       "1",
