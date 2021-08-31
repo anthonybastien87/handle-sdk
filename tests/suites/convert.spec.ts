@@ -6,7 +6,7 @@ let convert: Convert;
 
 describe("Convert", function () {
   beforeAll(async () => {
-    convert = new Convert("kovan");
+    convert = new Convert("homestead");
   });
 
   it("Should return a list of tokens", async () => {
@@ -15,7 +15,7 @@ describe("Convert", function () {
   });
 
   it("Should return different tokens when the network changes", async () => {
-    const SECOND_NETWORK = "homestead";
+    const SECOND_NETWORK = "polygon";
 
     const networkOneTokens = await convert.getTokens();
 
