@@ -15,7 +15,7 @@ describe("Convert", function () {
   });
 
   it("Should return different tokens when the network changes", async () => {
-    const SECOND_NETWORK = "homestead";
+    const SECOND_NETWORK = "polygon";
 
     const networkOneTokens = await convert.getTokens();
 
