@@ -558,6 +558,15 @@
     "displayDecimals": 4
   },
   {
+    "symbol": "LUSD",
+    "name": "Liquity USD Stablecoin",
+    "address": "0xb462ac3091e24eb7088f24f99405bcd9d6bf3c42",
+    "decimals": 18,
+    "icon": "https://tokens.1inch.exchange/0x5f98805a4e8be255a32880fdec7f6728c6568ba0.png",
+    "highlight": true,
+    "displayDecimals": 4
+  },
+  {
     "symbol": "maAAVE",
     "name": "Matic AAVE Interest Bearing",
     "address": "0x823cd4264c1b951c9209ad0deaea9988fe8429bf",
