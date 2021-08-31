@@ -6,7 +6,7 @@ let convert: Convert;
 
 describe("Convert", function () {
   beforeAll(async () => {
-    convert = new Convert("homestead");
+    convert = new Convert("kovan");
   });
 
   it("Should return a list of tokens", async () => {
@@ -33,7 +33,7 @@ describe("Convert", function () {
   it("Should fetch price data for a trade", async () => {
     const priceResult = await convert.getQuote(
       "ETH",
-      "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa",
       ethers.utils.parseEther("1"),
       undefined,
       "1",
