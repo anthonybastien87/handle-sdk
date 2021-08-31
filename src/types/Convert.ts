@@ -9,7 +9,6 @@ type Token = {
   address: string;
   decimals: number;
   icon: string;
-  highlight: boolean;
   displayDecimals: number;
 };
 
