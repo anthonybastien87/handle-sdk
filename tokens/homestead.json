@@ -45,7 +45,7 @@
     "address": "0xb6ed7644c69416d67b522e20bc294a9a9b405b31",
     "decimals": 8,
     "icon": "https://0xbitcoin.org/img/logo.74052b9f.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "0xMR",
@@ -829,7 +829,7 @@
     "address": "0x9ff58f4ffb29fa2266ab25e75e2a8b3503311656",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0x9ff58f4ffb29fa2266ab25e75e2a8b3503311656.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "aWBTCv1",
@@ -837,7 +837,7 @@
     "address": "0xfc4b8ed459e00e5400be803a9bb3954234fd50e3",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0xfc4b8ed459e00e5400be803a9bb3954234fd50e3.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "aWETH",
@@ -1037,7 +1037,7 @@
     "address": "0x9be89d2a4cd102d8fecc6bf9da793be995c22541",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0x9be89d2a4cd102d8fecc6bf9da793be995c22541.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "BCDT",
@@ -1765,7 +1765,7 @@
     "address": "0x7ea9c63e216d5565c3940a2b3d150e59c2907db3",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0x7ea9c63e216d5565c3940a2b3d150e59c2907db3.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "crBOND",
@@ -1917,7 +1917,7 @@
     "address": "0x054b7ed3f45714d3091e82aad64a1588dc4096ed",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0x054b7ed3f45714d3091e82aad64a1588dc4096ed.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "crHEGIC",
@@ -2013,7 +2013,7 @@
     "address": "0x17107f40d70f4470d20cb3f138a052cae8ebd4be",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0x17107f40d70f4470d20cb3f138a052cae8ebd4be.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "crSLP-DAI-ETH",
@@ -2053,7 +2053,7 @@
     "address": "0x73f6cba38922960b7092175c0add22ab8d0e81fc",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0x73f6cba38922960b7092175c0add22ab8d0e81fc.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "crSLP-YFI-ETH",
@@ -2109,7 +2109,7 @@
     "address": "0xf047d4be569fb770db143a6a90ef203fc1295922",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0xf047d4be569fb770db143a6a90ef203fc1295922.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "CRU",
@@ -2157,7 +2157,7 @@
     "address": "0x011a014d5e8eb4771e575bb1000318d509230afa",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0x011a014d5e8eb4771e575bb1000318d509230afa.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "crUSDC",
@@ -2189,7 +2189,7 @@
     "address": "0x197070723ce0d3810a0e47f06e935c30a480d4fc",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0x197070723ce0d3810a0e47f06e935c30a480d4fc.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "crWNXM",
@@ -2349,7 +2349,7 @@
     "address": "0xc11b1268c1a384e55c48c2391d8d480264a3a7f4",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0xc11b1268c1a384e55c48c2391d8d480264a3a7f4.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "CWS",
@@ -4213,7 +4213,7 @@
     "address": "0x3212b29E33587A00FB1C83346f5dBFA69A458923",
     "decimals": 8,
     "icon": "https://img.paraswap.network/imBTC.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "IND",
@@ -6357,7 +6357,7 @@
     "address": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0xeb4c2781e4eba804ce9a9803c67d0893436bb27d.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "renDGB",
@@ -8405,7 +8405,7 @@
     "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "wCRES",
@@ -8533,7 +8533,7 @@
     "address": "0xecbf566944250dde88322581024e611419715f7a",
     "decimals": 9,
     "icon": "https://tokens.1inch.exchange/0xecbf566944250dde88322581024e611419715f7a.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "XCHF",
@@ -8749,7 +8749,7 @@
     "address": "0x04aa51bbcb46541455ccf1b8bef2ebc5d3787ec9",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0x04aa51bbcb46541455ccf1b8bef2ebc5d3787ec9.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "yBUSD",

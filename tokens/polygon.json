@@ -13,7 +13,7 @@
     "address": "0x71b821aa52a49f32eed535fca6eb5aa130085978",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0x71b821aa52a49f32eed535fca6eb5aa130085978.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "AAVE",
@@ -77,7 +77,7 @@
     "address": "0x5c2ed810328349100a66b82b78a1791b101c9d61",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0x9ff58f4ffb29fa2266ab25e75e2a8b3503311656.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "amWETH",
@@ -530,7 +530,7 @@
   {
     "symbol": "MATIC",
     "name": "MATIC",
-    "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "address": "0x0000000000000000000000000000000000001010",
     "decimals": 18,
     "icon": "https://tokens.1inch.exchange/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0.png",
     "displayDecimals": 4
@@ -797,7 +797,7 @@
     "address": "0xdbf31df14b66535af65aac99c32e9ea844e14501",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0xeb4c2781e4eba804ce9a9803c67d0893436bb27d.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "sd3Crv",
@@ -957,7 +957,7 @@
     "address": "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
     "decimals": 8,
     "icon": "https://tokens.1inch.exchange/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png",
-    "displayDecimals": 4
+    "displayDecimals": 8
   },
   {
     "symbol": "WETH",
