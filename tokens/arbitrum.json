@@ -120,13 +120,6 @@
     "displayDecimals": 4
   },
   {
-    "symbol": "EUX",
-    "name": "dForce EUR",
-    "decimals": 18,
-    "address": "0x969131d8ddc06c2be11a13e6e7facf22cf57d95e",
-    "displayDecimals": 4
-  },
-  {
     "symbol": "FUSE",
     "name": "Fuse Token",
     "decimals": 18,
@@ -139,6 +132,7 @@
     "name": "GMX",
     "decimals": 18,
     "address": "0x590020b1005b8b25f1a2c82c5f743c540dcfa24d",
+    "icon": "https://s2.coinmarketcap.com/static/img/coins/200x200/11857.png",
     "displayDecimals": 4
   },
   {
@@ -281,6 +275,7 @@
     "name": "Swapr",
     "decimals": 18,
     "address": "0xde903e2712288a1da82942dddf2c20529565ac30",
+    "icon": "https://assets.coingecko.com/coins/images/18740/large/dxswap-purple.png?1633313025",
     "displayDecimals": 4
   },
   {
