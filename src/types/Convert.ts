@@ -43,8 +43,19 @@ export class Convert {
       }
     });
 
-    this.tokenList =
-      network === "polygon" ? polygon : network === "arbitrum" ? arbitrum : homestead;
+    let tokenList;
+    switch (network) {
+      case "polygon":
+        tokenList = polygon;
+        break;
+      case "arbitrum":
+        tokenList = arbitrum;
+        break;
+      default:
+        tokenList = homestead;
+    }
+
+    this.tokenList = tokenList;
   }
 
   public getTokens = async () => {
