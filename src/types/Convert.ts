@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from "axios";
 import { BigNumber } from "ethers";
 import homestead from "../../tokens/homestead.json";
 import polygon from "../../tokens/polygon.json";
+import arbitrum from "../../tokens/arbitrum.json";
 
 type Token = {
   symbol: string;
@@ -12,7 +13,7 @@ type Token = {
   displayDecimals: number;
 };
 
-type SupportedNetwork = "homestead" | "kovan" | "polygon";
+type SupportedNetwork = "homestead" | "kovan" | "polygon" | "arbitrum";
 
 // this is a short term solution to ensure that sdk users
 // cant bypass the handle convert fees.
@@ -42,7 +43,19 @@ export class Convert {
       }
     });
 
-    this.tokenList = network === "polygon" ? polygon : homestead;
+    let tokenList;
+    switch (network) {
+      case "polygon":
+        tokenList = polygon;
+        break;
+      case "arbitrum":
+        tokenList = arbitrum;
+        break;
+      default:
+        tokenList = homestead;
+    }
+
+    this.tokenList = tokenList;
   }
 
   public getTokens = async () => {
