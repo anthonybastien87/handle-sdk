@@ -11,8 +11,8 @@
     "symbol": "ALCH",
     "name": "Alchemy",
     "decimals": 18,
-    "icon": "https://zapper.fi/images/ALCH-icon.png",
     "address": "0x0e15258734300290a651fdbae8deb039a8e7a2fa",
+    "icon": "https://zapper.fi/images/ALCH-icon.png",
     "displayDecimals": 4
   },
   {
@@ -51,8 +51,8 @@
     "symbol": "CELR",
     "name": "CelerToken",
     "decimals": 18,
-    "icon": "https://zapper.fi/images/CELR-icon.png",
     "address": "0x3a8b787f78d775aecfeea15706d4221b40f345ab",
+    "icon": "https://zapper.fi/images/CELR-icon.png",
     "displayDecimals": 4
   },
   {
@@ -67,8 +67,8 @@
     "symbol": "CREAM",
     "name": "Cream",
     "decimals": 18,
-    "icon": "https://tokens.1inch.io/0x2ba592f78db6436527729929aaf6c908497cb200.png",
     "address": "0xf4d48ce3ee1ac3651998971541badbb9a14d7234",
+    "icon": "https://tokens.1inch.io/0x2ba592f78db6436527729929aaf6c908497cb200.png",
     "displayDecimals": 4
   },
   {
@@ -155,8 +155,8 @@
     "symbol": "KUN",
     "name": "QIAN governance token",
     "decimals": 18,
-    "icon": "https://zapper.fi/images/KUN-icon.png",
     "address": "0x04cb2d263a7489f02d813eaab9ba1bb8466347f2",
+    "icon": "https://zapper.fi/images/KUN-icon.png",
     "displayDecimals": 4
   },
   {
@@ -232,13 +232,6 @@
     "displayDecimals": 4
   },
   {
-    "symbol": "PL2",
-    "name": "Plenny",
-    "decimals": 18,
-    "address": "0x3642c0680329ae3e103e2b5ab29ddfed4d43cbe5",
-    "displayDecimals": 4
-  },
-  {
     "symbol": "PREMIA",
     "name": "Premia",
     "decimals": 18,
@@ -307,6 +300,7 @@
     "name": "dForce USD",
     "decimals": 18,
     "address": "0xcd14c3a2ba27819b352aae73414a26e2b366dc50",
+    "icon": "https://assets.coingecko.com/coins/images/17422/small/usx_32.png",
     "displayDecimals": 4
   },
   {
@@ -330,6 +324,7 @@
     "name": "Wrapped CHI",
     "decimals": 8,
     "address": "0xa64ecce74f8cdb7a940766b71f1b108bac69851a",
+    "icon": "https://s2.coinmarketcap.com/static/img/coins/64x64/2099.png",
     "displayDecimals": 4
   },
   {
