@@ -6,7 +6,7 @@ let convert: Convert;
 
 describe("Convert", function () {
   beforeAll(async () => {
-    convert = new Convert("kovan");
+    convert = new Convert("homestead");
   });
 
   it("Should return a list of tokens", async () => {
