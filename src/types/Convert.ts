@@ -43,7 +43,8 @@ export class Convert {
       }
     });
 
-    this.tokenList = network === "polygon" ? polygon : "arbitrum" ? arbitrum : homestead;
+    this.tokenList =
+      network === "polygon" ? polygon : network === "arbitrum" ? arbitrum : homestead;
   }
 
   public getTokens = async () => {
