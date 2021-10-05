@@ -77,7 +77,7 @@ export class Convert {
     slippagePercentage: string,
     gasPriceInWei: string
   ) => {
-    if (this.isSupportedNetwork(this.network)) {
+    if (!this.isSupportedNetwork(this.network)) {
       console.log("Network not supported for convert");
       return;
     }
