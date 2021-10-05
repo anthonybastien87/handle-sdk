@@ -32,8 +32,9 @@ export class Convert {
   private client: AxiosInstance;
   private tokenAddressToType: { [key: string]: string } | undefined;
   private tokenList: Token[];
+  private network: string;
 
-  constructor(network: SupportedNetwork) {
+  constructor(network: string) {
     const baseURL = `https://${network === "homestead" ? "" : network + "."}api.0x.org`;
 
     this.client = axios.create({
@@ -56,7 +57,12 @@ export class Convert {
     }
 
     this.tokenList = tokenList;
+    this.network = network;
   }
+
+  isSupportedNetwork = (network: string) => {
+    return network as SupportedNetwork;
+  };
 
   public getTokens = async () => {
     await this.setTokenAddressToType(this.tokenList);
@@ -71,6 +77,11 @@ export class Convert {
     slippagePercentage: string,
     gasPriceInWei: string
   ) => {
+    if (this.isSupportedNetwork(this.network)) {
+      console.log("Network not supported for convert");
+      return;
+    }
+
     if (sellAmount && buyAmount) {
       throw new Error("Can't set both sell and buy amounts");
     }
