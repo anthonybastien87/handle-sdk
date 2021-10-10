@@ -530,7 +530,7 @@
   {
     "symbol": "MATIC",
     "name": "MATIC",
-    "address": "0x0000000000000000000000000000000000001010",
+    "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "decimals": 18,
     "icon": "https://tokens.1inch.exchange/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0.png",
     "displayDecimals": 4
