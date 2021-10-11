@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import axios from "axios";
 import { BigNumber } from "ethers";
 import homestead from "../../tokens/homestead.json";
 import polygon from "../../tokens/polygon.json";
@@ -13,7 +13,7 @@ type Token = {
   displayDecimals: number;
 };
 
-type SupportedNetwork = "homestead" | "kovan" | "polygon" | "arbitrum";
+type SupportedNetwork = "homestead" | "polygon" | "arbitrum";
 
 // this is a short term solution to ensure that sdk users
 // cant bypass the handle convert fees.
@@ -28,22 +28,27 @@ const HANDLE_TOKEN_TYPES: { [key: string]: string } = {
 
 const HANDLE_FEE_ADDRESS = "0xFa2c1bE677BE4BEc8851D1577B343F7060B51E3A";
 
+type Swap = {
+  to: string;
+  buyAmount: string;
+  sellAmount: string;
+  allowanceTarget: string;
+  value: string;
+  data: string;
+  gas: string;
+};
+
+type Quote = {
+  buyAmount: string;
+  sellAmount: string;
+  gas: string;
+};
+
 export class Convert {
-  private client: AxiosInstance;
   private tokenAddressToType: { [key: string]: string } | undefined;
   private tokenList: Token[];
-  private network: string;
 
-  constructor(network: string) {
-    const baseURL = `https://${network === "homestead" ? "" : network + "."}api.0x.org`;
-
-    this.client = axios.create({
-      baseURL,
-      headers: {
-        "Cache-Control": "no-store"
-      }
-    });
-
+  constructor(private network: SupportedNetwork) {
     let tokenList;
     switch (network) {
       case "polygon":
@@ -52,17 +57,15 @@ export class Convert {
       case "arbitrum":
         tokenList = arbitrum;
         break;
-      default:
+      case "homestead":
         tokenList = homestead;
+        break;
+      default:
+        throw new Error("Network not supported for convert");
     }
 
     this.tokenList = tokenList;
-    this.network = network;
   }
-
-  isSupportedNetwork = (network: string) => {
-    return network as SupportedNetwork;
-  };
 
   public getTokens = async () => {
     await this.setTokenAddressToType(this.tokenList);
@@ -74,14 +77,27 @@ export class Convert {
     buyToken: string,
     sellAmount: BigNumber | undefined,
     buyAmount: BigNumber | undefined,
-    slippagePercentage: string,
     gasPriceInWei: string
-  ) => {
-    if (!this.isSupportedNetwork(this.network)) {
-      console.log("Network not supported for convert");
-      return;
+  ): Promise<Quote> => {
+    if (this.network === "arbitrum") {
+      if (!sellAmount) {
+        throw new Error("Must supply a sell amount when trading on arbitrum");
+      }
+      return this.get1InchQuote(sellToken, buyToken, sellAmount, gasPriceInWei);
     }
 
+    return this.get0xQuote(sellToken, buyToken, sellAmount, buyAmount, gasPriceInWei);
+  };
+
+  public getSwap = async (
+    sellToken: string,
+    buyToken: string,
+    sellAmount: BigNumber | undefined,
+    buyAmount: BigNumber | undefined,
+    slippagePercentage: string,
+    gasPriceInWei: string,
+    fromAddress: string
+  ): Promise<Swap> => {
     if (sellAmount && buyAmount) {
       throw new Error("Can't set both sell and buy amounts");
     }
@@ -90,7 +106,89 @@ export class Convert {
       await this.setTokenAddressToType();
     }
 
-    const { data } = await this.client.get("/swap/v1/quote", {
+    if (this.network === "arbitrum") {
+      if (!sellAmount) {
+        throw new Error("Must supply a sell amount when trading on arbitrum");
+      }
+
+      return this.get1InchSwap(
+        sellToken,
+        buyToken,
+        sellAmount,
+        slippagePercentage,
+        gasPriceInWei,
+        fromAddress
+      );
+    }
+
+    return this.get0xSwap(
+      sellToken,
+      buyToken,
+      sellAmount,
+      buyAmount,
+      slippagePercentage,
+      gasPriceInWei
+    );
+  };
+
+  private get0xQuote = async (
+    sellToken: string,
+    buyToken: string,
+    sellAmount: BigNumber | undefined,
+    buyAmount: BigNumber | undefined,
+    gasPriceInWei: string
+  ): Promise<Quote> => {
+    const { data } = await axios.get(`${this.get0xBaseUrl()}/price`, {
+      params: {
+        buyToken,
+        sellToken,
+        sellAmount: sellAmount?.toString(),
+        buyAmount: buyAmount?.toString(),
+        buyTokenPercentageFee: this.getFees(buyToken, sellToken),
+        feeRecipient: HANDLE_FEE_ADDRESS,
+        gasPrice: gasPriceInWei
+      }
+    });
+
+    return {
+      buyAmount: data.buyAmount,
+      sellAmount: data.sellAmount,
+      gas: data.gas
+    };
+  };
+
+  private get1InchQuote = async (
+    sellToken: string,
+    buyToken: string,
+    sellAmount: BigNumber,
+    gasPriceInWei: string
+  ): Promise<Quote> => {
+    const { data } = await axios.get(`${this.get1InchBaseUrl()}/quote`, {
+      params: {
+        fromTokenAddress: sellToken,
+        toTokenAddress: buyToken,
+        amount: sellAmount.toString(),
+        fee: this.getFees(buyToken, sellToken),
+        gasPrice: gasPriceInWei
+      }
+    });
+
+    return {
+      buyAmount: data.toTokenAmount,
+      sellAmount: data.fromTokenAmount,
+      gas: data.estimatedGas
+    };
+  };
+
+  private get0xSwap = async (
+    sellToken: string,
+    buyToken: string,
+    sellAmount: BigNumber | undefined,
+    buyAmount: BigNumber | undefined,
+    slippagePercentage: string,
+    gasPriceInWei: string
+  ): Promise<Swap> => {
+    const { data } = await axios.get(`${this.get0xBaseUrl()}/quote`, {
       params: {
         buyToken,
         sellToken,
@@ -103,7 +201,56 @@ export class Convert {
         gasPrice: gasPriceInWei
       }
     });
-    return data;
+
+    return {
+      to: data.to,
+      buyAmount: data.buyAmount,
+      sellAmount: data.sellAmount,
+      allowanceTarget: data.allowanceTarget,
+      value: data.value,
+      data: data.data,
+      gas: data.gas
+    };
+  };
+
+  public get1InchSwap = async (
+    sellToken: string,
+    buyToken: string,
+    sellAmount: BigNumber,
+    slippagePercentage: string,
+    gasPriceInWei: string,
+    fromAddress: string
+  ): Promise<Swap> => {
+    if (!this.tokenAddressToType) {
+      await this.setTokenAddressToType();
+    }
+
+    const { data } = await axios.get(`${this.get1InchBaseUrl()}/swap`, {
+      params: {
+        fromTokenAddress: sellToken,
+        toTokenAddress: buyToken,
+        amount: sellAmount.toString(),
+        fromAddress,
+        slippage: slippagePercentage,
+        referrerAddress: HANDLE_FEE_ADDRESS,
+        fee: this.getFees(buyToken, sellToken),
+        gasPrice: gasPriceInWei
+      }
+    });
+
+    const {
+      data: { address: allowanceTarget }
+    } = await axios.get(`${this.get1InchBaseUrl()}/approve/spender`);
+
+    return {
+      to: data.tx.to,
+      buyAmount: data.toTokenAmount,
+      sellAmount: data.fromTokenAmount,
+      allowanceTarget,
+      value: data.tx.value,
+      data: data.tx.data,
+      gas: data.tx.gas
+    };
   };
 
   private setTokenAddressToType = async (tokens?: Token[]) => {
@@ -139,5 +286,17 @@ export class Convert {
     }
 
     return "0.001";
+  };
+
+  private get0xBaseUrl = () =>
+    `https://${this.network === "homestead" ? "" : this.network + "."}api.0x.org/swap/v1`;
+
+  private get1InchBaseUrl = () => {
+    const networkNameToIdMap: { [key in SupportedNetwork]: number } = {
+      homestead: 1,
+      polygon: 137,
+      arbitrum: 42161
+    };
+    return `https://api.1inch.exchange/v3.0/${networkNameToIdMap[this.network]}`;
   };
 }
