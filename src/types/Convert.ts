@@ -28,20 +28,17 @@ const HANDLE_TOKEN_TYPES: { [key: string]: string } = {
 
 const HANDLE_FEE_ADDRESS = "0xFa2c1bE677BE4BEc8851D1577B343F7060B51E3A";
 
-type Swap = {
+type Swap = Quote & {
   to: string;
-  buyAmount: string;
-  sellAmount: string;
-  allowanceTarget: string;
   value: string;
   data: string;
-  gas: string;
 };
 
 type Quote = {
   buyAmount: string;
   sellAmount: string;
   gas: string;
+  allowanceTarget: string;
 };
 
 export class Convert {
@@ -153,7 +150,8 @@ export class Convert {
     return {
       buyAmount: data.buyAmount,
       sellAmount: data.sellAmount,
-      gas: data.gas
+      gas: data.gas,
+      allowanceTarget: data.allowanceTarget
     };
   };
 
@@ -173,10 +171,15 @@ export class Convert {
       }
     });
 
+    const {
+      data: { address: allowanceTarget }
+    } = await axios.get(`${this.get1InchBaseUrl()}/approve/spender`);
+
     return {
       buyAmount: data.toTokenAmount,
       sellAmount: data.fromTokenAmount,
-      gas: data.estimatedGas
+      gas: data.estimatedGas,
+      allowanceTarget
     };
   };
 
