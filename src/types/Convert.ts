@@ -48,6 +48,7 @@ type ZeroXQuoteParams = {
   buyTokenPercentageFee: string;
   feeRecipient: string;
   gasPrice: string;
+  takerAddress: string;
 };
 
 type ZeroXSwapParams = ZeroXQuoteParams & {
@@ -102,7 +103,8 @@ export class Convert {
     buyToken: string,
     sellAmount: BigNumber | undefined,
     buyAmount: BigNumber | undefined,
-    gasPriceInWei: string
+    gasPriceInWei: string,
+    fromAddress: string
   ): Promise<Quote> => {
     if (this.network === "arbitrum") {
       if (!sellAmount) {
@@ -111,7 +113,7 @@ export class Convert {
       return this.get1InchQuote(sellToken, buyToken, sellAmount, gasPriceInWei);
     }
 
-    return this.get0xQuote(sellToken, buyToken, sellAmount, buyAmount, gasPriceInWei);
+    return this.get0xQuote(sellToken, buyToken, sellAmount, buyAmount, gasPriceInWei, fromAddress);
   };
 
   public getSwap = async (
@@ -152,7 +154,8 @@ export class Convert {
       sellAmount,
       buyAmount,
       slippagePercentage,
-      gasPriceInWei
+      gasPriceInWei,
+      fromAddress
     );
   };
 
@@ -161,7 +164,8 @@ export class Convert {
     buyToken: string,
     sellAmount: BigNumber | undefined,
     buyAmount: BigNumber | undefined,
-    gasPriceInWei: string
+    gasPriceInWei: string,
+    takerAddress: string
   ): Promise<Quote> => {
     const params: ZeroXQuoteParams = {
       buyToken,
@@ -170,7 +174,8 @@ export class Convert {
       buyAmount: buyAmount?.toString(),
       buyTokenPercentageFee: this.getFees(sellToken, buyToken),
       feeRecipient: Config.feeAddress,
-      gasPrice: gasPriceInWei
+      gasPrice: gasPriceInWei,
+      takerAddress
     };
 
     const { data } = await axios.get(`${this.get0xBaseUrl()}/price`, {
@@ -221,18 +226,20 @@ export class Convert {
     sellAmount: BigNumber | undefined,
     buyAmount: BigNumber | undefined,
     slippagePercentage: string,
-    gasPriceInWei: string
+    gasPriceInWei: string,
+    takerAddress: string
   ): Promise<Swap> => {
     const params: ZeroXSwapParams = {
       buyToken,
       sellToken,
       sellAmount: sellAmount?.toString(),
       buyAmount: buyAmount?.toString(),
-      feeRecipient: Config.feeAddress,
       affiliateAddress: Config.feeAddress,
-      buyTokenPercentageFee: this.getFees(sellToken, buyToken),
       slippagePercentage: (Number(slippagePercentage) / 100).toString(),
-      gasPrice: gasPriceInWei
+      gasPrice: gasPriceInWei,
+      buyTokenPercentageFee: this.getFees(sellToken, buyToken),
+      feeRecipient: Config.feeAddress,
+      takerAddress
     };
 
     const { data } = await axios.get(`${this.get0xBaseUrl()}/quote`, {
@@ -312,7 +319,11 @@ export class Convert {
     }
   };
 
-  private getFees = (sellToken: string, buyToken: string) => {
+  private getFees = (sellToken: string, buyToken: string): string | undefined => {
+    if (buyToken === Config.forexTokenAddress) {
+      return "0";
+    }
+
     const sellTokenType = this.tokenAddressToType?.[sellToken];
     const buyTokenType = this.tokenAddressToType?.[buyToken];
 
