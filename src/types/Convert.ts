@@ -140,7 +140,7 @@ export class Convert {
         sellToken,
         sellAmount: sellAmount?.toString(),
         buyAmount: buyAmount?.toString(),
-        buyTokenPercentageFee: this.getFees(buyToken, sellToken),
+        buyTokenPercentageFee: this.getFees(sellToken, buyToken),
         feeRecipient: Config.feeAddress,
         gasPrice: gasPriceInWei
       }
@@ -165,7 +165,7 @@ export class Convert {
         fromTokenAddress: sellToken,
         toTokenAddress: buyToken,
         amount: sellAmount.toString(),
-        fee: this.getFees(buyToken, sellToken),
+        fee: this.getFees(sellToken, buyToken),
         gasPrice: gasPriceInWei
       }
     });
@@ -198,7 +198,7 @@ export class Convert {
         buyAmount: buyAmount?.toString(),
         feeRecipient: Config.feeAddress,
         affiliateAddress: Config.feeAddress,
-        buyTokenPercentageFee: this.getFees(buyToken, sellToken),
+        buyTokenPercentageFee: this.getFees(sellToken, buyToken),
         slippagePercentage: Number(slippagePercentage) / 100,
         gasPrice: gasPriceInWei
       }
@@ -235,7 +235,7 @@ export class Convert {
         fromAddress,
         slippage: slippagePercentage,
         referrerAddress: Config.feeAddress,
-        fee: this.getFees(buyToken, sellToken),
+        fee: this.getFees(sellToken, buyToken),
         gasPrice: gasPriceInWei
       }
     });
@@ -275,15 +275,15 @@ export class Convert {
     }
   };
 
-  private getFees = (tokenA: string, tokenB: string) => {
-    const typeAType = this.tokenAddressToType?.[tokenA];
-    const typeBType = this.tokenAddressToType?.[tokenB];
+  private getFees = (sellToken: string, buyToken: string) => {
+    const sellTokenType = this.tokenAddressToType?.[sellToken];
+    const buyTokenType = this.tokenAddressToType?.[buyToken];
 
-    if (!typeAType || !typeBType) {
+    if (!sellTokenType || !buyTokenType) {
       return "0.003";
     }
 
-    if (typeAType === typeBType) {
+    if (sellTokenType === buyTokenType) {
       return "0.0004";
     }
 
