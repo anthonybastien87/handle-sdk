@@ -55,6 +55,20 @@ type ZeroXSwapParams = ZeroXQuoteParams & {
   slippagePercentage: string;
 };
 
+type OneInchQuoteParams = {
+  fromTokenAddress: string;
+  toTokenAddress: string;
+  amount: string;
+  fee: string;
+  gasPrice: string;
+};
+
+type OneInchSwapParams = OneInchQuoteParams & {
+  fromAddress: string;
+  slippage: string;
+  referrerAddress: string;
+};
+
 export class Convert {
   private tokenAddressToType: { [key: string]: string } | undefined;
   private tokenList: Token[];
@@ -177,14 +191,16 @@ export class Convert {
     sellAmount: BigNumber,
     gasPriceInWei: string
   ): Promise<Quote> => {
+    const params: OneInchQuoteParams = {
+      fromTokenAddress: sellToken,
+      toTokenAddress: buyToken,
+      amount: sellAmount.toString(),
+      fee: this.getFees(sellToken, buyToken),
+      gasPrice: gasPriceInWei
+    };
+
     const { data } = await axios.get(`${this.get1InchBaseUrl()}/quote`, {
-      params: {
-        fromTokenAddress: sellToken,
-        toTokenAddress: buyToken,
-        amount: sellAmount.toString(),
-        fee: this.getFees(sellToken, buyToken),
-        gasPrice: gasPriceInWei
-      }
+      params
     });
 
     const {
@@ -246,17 +262,19 @@ export class Convert {
       await this.setTokenAddressToType();
     }
 
+    const params: OneInchSwapParams = {
+      fromTokenAddress: sellToken,
+      toTokenAddress: buyToken,
+      amount: sellAmount.toString(),
+      fromAddress,
+      slippage: slippagePercentage,
+      referrerAddress: Config.feeAddress,
+      fee: this.getFees(sellToken, buyToken),
+      gasPrice: gasPriceInWei
+    };
+
     const { data } = await axios.get(`${this.get1InchBaseUrl()}/swap`, {
-      params: {
-        fromTokenAddress: sellToken,
-        toTokenAddress: buyToken,
-        amount: sellAmount.toString(),
-        fromAddress,
-        slippage: slippagePercentage,
-        referrerAddress: Config.feeAddress,
-        fee: this.getFees(sellToken, buyToken),
-        gasPrice: gasPriceInWei
-      }
+      params
     });
 
     const {
