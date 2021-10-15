@@ -40,6 +40,21 @@ type Quote = {
   allowanceTarget: string;
 };
 
+type ZeroXQuoteParams = {
+  buyToken: string;
+  sellToken: string;
+  sellAmount: string | undefined;
+  buyAmount: string | undefined;
+  buyTokenPercentageFee: string;
+  feeRecipient: string;
+  gasPrice: string;
+};
+
+type ZeroXSwapParams = ZeroXQuoteParams & {
+  affiliateAddress: string;
+  slippagePercentage: string;
+};
+
 export class Convert {
   private tokenAddressToType: { [key: string]: string } | undefined;
   private tokenList: Token[];
@@ -134,16 +149,18 @@ export class Convert {
     buyAmount: BigNumber | undefined,
     gasPriceInWei: string
   ): Promise<Quote> => {
+    const params: ZeroXQuoteParams = {
+      buyToken,
+      sellToken,
+      sellAmount: sellAmount?.toString(),
+      buyAmount: buyAmount?.toString(),
+      buyTokenPercentageFee: this.getFees(sellToken, buyToken),
+      feeRecipient: Config.feeAddress,
+      gasPrice: gasPriceInWei
+    };
+
     const { data } = await axios.get(`${this.get0xBaseUrl()}/price`, {
-      params: {
-        buyToken,
-        sellToken,
-        sellAmount: sellAmount?.toString(),
-        buyAmount: buyAmount?.toString(),
-        buyTokenPercentageFee: this.getFees(sellToken, buyToken),
-        feeRecipient: Config.feeAddress,
-        gasPrice: gasPriceInWei
-      }
+      params
     });
 
     return {
@@ -190,18 +207,20 @@ export class Convert {
     slippagePercentage: string,
     gasPriceInWei: string
   ): Promise<Swap> => {
+    const params: ZeroXSwapParams = {
+      buyToken,
+      sellToken,
+      sellAmount: sellAmount?.toString(),
+      buyAmount: buyAmount?.toString(),
+      feeRecipient: Config.feeAddress,
+      affiliateAddress: Config.feeAddress,
+      buyTokenPercentageFee: this.getFees(sellToken, buyToken),
+      slippagePercentage: (Number(slippagePercentage) / 100).toString(),
+      gasPrice: gasPriceInWei
+    };
+
     const { data } = await axios.get(`${this.get0xBaseUrl()}/quote`, {
-      params: {
-        buyToken,
-        sellToken,
-        sellAmount: sellAmount?.toString(),
-        buyAmount: buyAmount?.toString(),
-        feeRecipient: Config.feeAddress,
-        affiliateAddress: Config.feeAddress,
-        buyTokenPercentageFee: this.getFees(sellToken, buyToken),
-        slippagePercentage: Number(slippagePercentage) / 100,
-        gasPrice: gasPriceInWei
-      }
+      params
     });
 
     return {
