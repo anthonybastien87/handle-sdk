@@ -3,6 +3,7 @@ import { BigNumber } from "ethers";
 import homestead from "../../tokens/homestead.json";
 import polygon from "../../tokens/polygon.json";
 import arbitrum from "../../tokens/arbitrum.json";
+import { Config } from "./Config";
 
 type Token = {
   symbol: string;
@@ -25,8 +26,6 @@ const HANDLE_TOKEN_TYPES: { [key: string]: string } = {
   sUSD: "USD",
   EURS: "EURO"
 };
-
-const HANDLE_FEE_ADDRESS = "0xFa2c1bE677BE4BEc8851D1577B343F7060B51E3A";
 
 type Swap = Quote & {
   to: string;
@@ -142,7 +141,7 @@ export class Convert {
         sellAmount: sellAmount?.toString(),
         buyAmount: buyAmount?.toString(),
         buyTokenPercentageFee: this.getFees(buyToken, sellToken),
-        feeRecipient: HANDLE_FEE_ADDRESS,
+        feeRecipient: Config.feeAddress,
         gasPrice: gasPriceInWei
       }
     });
@@ -197,8 +196,8 @@ export class Convert {
         sellToken,
         sellAmount: sellAmount?.toString(),
         buyAmount: buyAmount?.toString(),
-        feeRecipient: HANDLE_FEE_ADDRESS,
-        affiliateAddress: HANDLE_FEE_ADDRESS,
+        feeRecipient: Config.feeAddress,
+        affiliateAddress: Config.feeAddress,
         buyTokenPercentageFee: this.getFees(buyToken, sellToken),
         slippagePercentage: Number(slippagePercentage) / 100,
         gasPrice: gasPriceInWei
@@ -235,7 +234,7 @@ export class Convert {
         amount: sellAmount.toString(),
         fromAddress,
         slippage: slippagePercentage,
-        referrerAddress: HANDLE_FEE_ADDRESS,
+        referrerAddress: Config.feeAddress,
         fee: this.getFees(buyToken, sellToken),
         gasPrice: gasPriceInWei
       }
