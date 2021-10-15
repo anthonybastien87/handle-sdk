@@ -2,24 +2,22 @@ import { describe, it } from "@jest/globals";
 import { Convert } from "../../src";
 import { ethers } from "ethers";
 
-let convertList: Convert;
-let convertSwap: Convert;
+let convert: Convert;
 
 describe("Convert", function () {
   beforeAll(async () => {
-    convertList = new Convert("homestead");
-    convertSwap = new Convert("kovan");
+    convert = new Convert("homestead");
   });
 
   it("Should return a list of tokens", async () => {
-    const tokens = await convertList.getTokens();
+    const tokens = await convert.getTokens();
     expect(tokens.length).toBeGreaterThan(0);
   });
 
   it("Should return different tokens when the network changes", async () => {
     const SECOND_NETWORK = "polygon";
 
-    const networkOneTokens = await convertList.getTokens();
+    const networkOneTokens = await convert.getTokens();
 
     if (process.env.NETWORK === SECOND_NETWORK) {
       throw new Error("ENV network is the same as SECOND_NETWORK");
@@ -33,14 +31,13 @@ describe("Convert", function () {
   });
 
   it("Should fetch price data for a trade", async () => {
-    const priceResult = await convertSwap.getQuote(
+    const priceResult = await convert.getQuote(
       "ETH",
-      "0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa",
+      "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
       ethers.utils.parseEther("1"),
       undefined,
-      "1",
       "1"
     );
-    expect(priceResult.price).toBeTruthy();
+    expect(priceResult.buyAmount).toBeTruthy();
   });
 });
