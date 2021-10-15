@@ -319,7 +319,7 @@ export class Convert {
     }
   };
 
-  private getFees = (sellToken: string, buyToken: string): string | undefined => {
+  private getFees = (sellToken: string, buyToken: string): string => {
     if (buyToken === Config.forexTokenAddress) {
       return "0";
     }
