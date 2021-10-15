@@ -172,7 +172,7 @@ export class Convert {
       sellToken,
       sellAmount: sellAmount?.toString(),
       buyAmount: buyAmount?.toString(),
-      buyTokenPercentageFee: this.getFees(sellToken, buyToken),
+      buyTokenPercentageFee: (this.getFeeAsPercentage(sellToken, buyToken) / 100).toString(),
       feeRecipient: Config.feeAddress,
       gasPrice: gasPriceInWei,
       takerAddress
@@ -200,7 +200,7 @@ export class Convert {
       fromTokenAddress: sellToken,
       toTokenAddress: buyToken,
       amount: sellAmount.toString(),
-      fee: this.getFees(sellToken, buyToken),
+      fee: this.getFeeAsPercentage(sellToken, buyToken).toString(),
       gasPrice: gasPriceInWei
     };
 
@@ -237,7 +237,7 @@ export class Convert {
       affiliateAddress: Config.feeAddress,
       slippagePercentage: (Number(slippagePercentage) / 100).toString(),
       gasPrice: gasPriceInWei,
-      buyTokenPercentageFee: this.getFees(sellToken, buyToken),
+      buyTokenPercentageFee: (this.getFeeAsPercentage(sellToken, buyToken) / 100).toString(),
       feeRecipient: Config.feeAddress,
       takerAddress
     };
@@ -276,7 +276,7 @@ export class Convert {
       fromAddress,
       slippage: slippagePercentage,
       referrerAddress: Config.feeAddress,
-      fee: this.getFees(sellToken, buyToken),
+      fee: this.getFeeAsPercentage(sellToken, buyToken).toString(),
       gasPrice: gasPriceInWei
     };
 
@@ -319,23 +319,26 @@ export class Convert {
     }
   };
 
-  private getFees = (sellToken: string, buyToken: string): string => {
+  private getFeeAsPercentage = (sellToken: string, buyToken: string): number => {
     if (buyToken === Config.forexTokenAddress) {
-      return "0";
+      return 0;
     }
 
     const sellTokenType = this.tokenAddressToType?.[sellToken];
     const buyTokenType = this.tokenAddressToType?.[buyToken];
 
     if (!sellTokenType || !buyTokenType) {
-      return "0.003";
+      // one token must be non stable
+      return 0.3;
     }
 
     if (sellTokenType === buyTokenType) {
-      return "0.0004";
+      // both are the same currency stable coin
+      return 0.04;
     }
 
-    return "0.001";
+    // both stables but different currencies
+    return 0.1;
   };
 
   private get0xBaseUrl = () =>
