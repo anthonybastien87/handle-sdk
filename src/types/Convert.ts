@@ -5,6 +5,8 @@ import polygon from "../../tokens/polygon.json";
 import arbitrum from "../../tokens/arbitrum.json";
 import { Config } from "./Config";
 
+type TokenType = "USD" | "EURO";
+
 type Token = {
   symbol: string;
   name: string;
@@ -18,7 +20,7 @@ type SupportedNetwork = "homestead" | "polygon" | "arbitrum";
 
 // this is a short term solution to ensure that sdk users
 // cant bypass the handle convert fees.
-const HANDLE_TOKEN_TYPES: { [key: string]: string } = {
+const HANDLE_TOKEN_TYPES: { [key: string]: TokenType } = {
   USDC: "USD",
   LUSD: "USD",
   DAI: "USD",
@@ -71,7 +73,7 @@ type OneInchSwapParams = OneInchQuoteParams & {
 };
 
 export class Convert {
-  private tokenAddressToType: { [key: string]: string } | undefined;
+  private tokenAddressToType: { [key: string]: TokenType } | undefined;
   private tokenList: Token[];
 
   constructor(private network: SupportedNetwork) {
@@ -129,10 +131,6 @@ export class Convert {
       throw new Error("Can't set both sell and buy amounts");
     }
 
-    if (!this.tokenAddressToType) {
-      await this.setTokenAddressToType();
-    }
-
     if (this.network === "arbitrum") {
       if (!sellAmount) {
         throw new Error("Must supply a sell amount when trading on arbitrum");
@@ -167,12 +165,14 @@ export class Convert {
     gasPriceInWei: string,
     takerAddress: string
   ): Promise<Quote> => {
+    const fee = await this.getFeeAsPercentage(sellToken, buyToken);
+
     const params: ZeroXQuoteParams = {
       buyToken,
       sellToken,
       sellAmount: sellAmount?.toString(),
       buyAmount: buyAmount?.toString(),
-      buyTokenPercentageFee: (this.getFeeAsPercentage(sellToken, buyToken) / 100).toString(),
+      buyTokenPercentageFee: (fee / 100).toString(),
       feeRecipient: Config.feeAddress,
       gasPrice: gasPriceInWei,
       takerAddress
@@ -196,11 +196,13 @@ export class Convert {
     sellAmount: BigNumber,
     gasPriceInWei: string
   ): Promise<Quote> => {
+    const fee = await this.getFeeAsPercentage(sellToken, buyToken);
+
     const params: OneInchQuoteParams = {
       fromTokenAddress: sellToken,
       toTokenAddress: buyToken,
       amount: sellAmount.toString(),
-      fee: this.getFeeAsPercentage(sellToken, buyToken).toString(),
+      fee: fee.toString(),
       gasPrice: gasPriceInWei
     };
 
@@ -229,6 +231,8 @@ export class Convert {
     gasPriceInWei: string,
     takerAddress: string
   ): Promise<Swap> => {
+    const fee = await this.getFeeAsPercentage(sellToken, buyToken);
+
     const params: ZeroXSwapParams = {
       buyToken,
       sellToken,
@@ -237,7 +241,7 @@ export class Convert {
       affiliateAddress: Config.feeAddress,
       slippagePercentage: (Number(slippagePercentage) / 100).toString(),
       gasPrice: gasPriceInWei,
-      buyTokenPercentageFee: (this.getFeeAsPercentage(sellToken, buyToken) / 100).toString(),
+      buyTokenPercentageFee: (fee / 100).toString(),
       feeRecipient: Config.feeAddress,
       takerAddress
     };
@@ -265,9 +269,7 @@ export class Convert {
     gasPriceInWei: string,
     fromAddress: string
   ): Promise<Swap> => {
-    if (!this.tokenAddressToType) {
-      await this.setTokenAddressToType();
-    }
+    const fee = await this.getFeeAsPercentage(sellToken, buyToken);
 
     const params: OneInchSwapParams = {
       fromTokenAddress: sellToken,
@@ -276,7 +278,7 @@ export class Convert {
       fromAddress,
       slippage: slippagePercentage,
       referrerAddress: Config.feeAddress,
-      fee: this.getFeeAsPercentage(sellToken, buyToken).toString(),
+      fee: fee.toString(),
       gasPrice: gasPriceInWei
     };
 
@@ -319,9 +321,25 @@ export class Convert {
     }
   };
 
-  private getFeeAsPercentage = (sellToken: string, buyToken: string): number => {
+  public getFeeAsPercentage = async (sellToken: string, buyToken: string): Promise<number> => {
+    const SAME_CURRENCY_STABLE_TO_SAME_CURRENCY_STABLE_FEE = 0.04;
+    const STABLE_TO_STABLE_FEE = 0.1;
+    const NON_STABLE_FEE = 0.3;
+
+    if (!this.tokenAddressToType) {
+      await this.setTokenAddressToType();
+    }
+
     if (buyToken === Config.forexTokenAddress) {
       return 0;
+    }
+
+    if (this.network === "homestead") {
+      if (sellToken === Config.forexTokenAddress) {
+        return NON_STABLE_FEE;
+      } else {
+        return 0;
+      }
     }
 
     const sellTokenType = this.tokenAddressToType?.[sellToken];
@@ -329,16 +347,16 @@ export class Convert {
 
     if (!sellTokenType || !buyTokenType) {
       // one token must be non stable
-      return 0.3;
+      return NON_STABLE_FEE;
     }
 
     if (sellTokenType === buyTokenType) {
       // both are the same currency stable coin
-      return 0.04;
+      return SAME_CURRENCY_STABLE_TO_SAME_CURRENCY_STABLE_FEE;
     }
 
     // both stables but different currencies
-    return 0.1;
+    return STABLE_TO_STABLE_FEE;
   };
 
   private get0xBaseUrl = () =>
