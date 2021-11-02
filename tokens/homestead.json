@@ -3512,6 +3512,38 @@
     "displayDecimals": 4
   },
   {
+    "symbol": "fxAUD",
+    "name": "fxAUD",
+    "address": "0x7E141940932E3D13bfa54B224cb4a16510519308",
+    "decimals": 18,
+    "icon": "https://handle.fi/images/fxAUDDarkLogo.png",
+    "displayDecimals": 4
+  },
+  {
+    "symbol": "fxPHP",
+    "name": "fxPHP",
+    "address": "0x3d147cD9aC957B2a5F968dE9d1c6B9d0872286a0",
+    "decimals": 18,
+    "icon": "https://handle.fi/images/fxPHPDarkLogo.png",
+    "displayDecimals": 4
+  },
+  {
+    "symbol": "fxUSD",
+    "name": "fxUSD",
+    "address": "0x8616E8EA83f048ab9A5eC513c9412Dd2993bcE3F",
+    "decimals": 18,
+    "icon": "https://handle.fi/images/fxUSDDarkLogo.png",
+    "displayDecimals": 4
+  },
+  {
+    "symbol": "fxEUR",
+    "name": "fxUSD",
+    "address": "0x116172B2482c5dC3E6f445C16Ac13367aC3FCd35",
+    "decimals": 18,
+    "icon": "https://handle.fi/images/fxEURDarkLogo.png",
+    "displayDecimals": 4
+  },
+  {
     "symbol": "FXS",
     "name": "Frax Share",
     "address": "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0",
