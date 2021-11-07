@@ -40,7 +40,7 @@ export class fxKeeperPool {
       this.contract.address
     );
     if (allowance.gte(amount)) return;
-    await (await this.erc20.approve(this.contract.address, amount)).wait(1);
+    await (await this.erc20.approve(this.contract.address, ethers.constants.MaxUint256)).wait(1);
   }
 
   public async stake(amount: ethers.BigNumber, referral?: string) {
