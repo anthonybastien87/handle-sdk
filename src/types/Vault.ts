@@ -149,42 +149,88 @@ export class Vault {
   }
 
   public async updateFromChain() {
-    // Update debt.
-    this.debt = await this.sdk.contracts.handle.getDebt(this.account, this.token.address);
+    const promises = [];
+
+    // Get debt.
+    promises.push(
+      new Promise<void>(async (resolve) => {
+        this.debt = await this.sdk.contracts.handle.getDebt(this.account, this.token.address);
+        resolve();
+      })
+    );
+
+    // Get total collateral
+    promises.push(
+      new Promise<void>(async (resolve) => {
+        this.collateralAsEth = await this.sdk.contracts.vaultLibrary.getTotalCollateralBalanceAsEth(
+          this.account,
+          this.token.address
+        );
+        resolve();
+      })
+    );
+
+    // Get min CR
+    promises.push(
+      new Promise<void>(async (resolve) => {
+        this.minimumRatio = this.ratios.minting =
+          await this.sdk.contracts.vaultLibrary.getMinimumRatio(this.account, this.token.address);
+        resolve();
+      })
+    );
+
+    // Get liquidation fee
+    promises.push(
+      new Promise<void>(async (resolve) => {
+        this.liquidationFee = await this.sdk.contracts.vaultLibrary.getLiquidationFee(
+          this.account,
+          this.token.address
+        );
+        resolve();
+      })
+    );
+
+    // Get token price
+    let tokenPrice = zero;
+    promises.push(
+      new Promise<void>(async (resolve) => {
+        tokenPrice = await this.sdk.contracts.handle.getTokenPrice(this.token.address);
+        resolve();
+      })
+    );
+
+    for (let coll of this.sdk.protocol.collateralTokens) {
+      promises.push(
+        new Promise<void>(async (resolve) => {
+          const collateralAmount = await this.sdk.contracts.handle.getCollateralBalance(
+            this.account,
+            coll.address,
+            this.token.address
+          );
+
+          this.collateral.push({
+            token: coll,
+            amount: collateralAmount
+          });
+
+          resolve();
+        })
+      );
+    }
+
+    await Promise.all(promises);
+
+    // Update debt as ETH
     this.debtAsEth = this.debt.mul(this.token.rate).div(ethers.constants.WeiPerEther);
 
     // Update collateral tokens.
     this.collateral = [];
-    this.collateralAsEth = ethers.BigNumber.from(0);
-
-    for (let coll of this.sdk.protocol.collateralTokens) {
-      const collateralAmount = await this.sdk.contracts.handle.getCollateralBalance(
-        this.account,
-        coll.address,
-        this.token.address
-      );
-      this.collateral.push({
-        token: coll,
-        amount: collateralAmount
-      });
-    }
-
-    // Get total collateral
-    this.collateralAsEth = await this.sdk.contracts.vaultLibrary.getTotalCollateralBalanceAsEth(
-      this.account,
-      this.token.address
-    );
+    this.collateralAsEth = zero;
 
     // Get CR
     this.collateralRatio = this.debtAsEth.gt(0)
       ? this.collateralAsEth.mul(oneEth).div(this.debtAsEth)
       : zero;
-
-    // Get min CR
-    this.minimumRatio = await this.sdk.contracts.vaultLibrary.getMinimumRatio(
-      this.account,
-      this.token.address
-    );
 
     // Determine if redeemable
     this.isRedeemable =
@@ -193,7 +239,6 @@ export class Vault {
       this.collateralAsEth.gt(zero) &&
       this.debt.gt(zero);
 
-    const tokenPrice = await this.sdk.contracts.handle.getTokenPrice(this.token.address);
     if (this.isRedeemable) {
       const redeemableAsEth = this.calculateTokensRequiredForCrIncrease(
         this.minimumRatio,
@@ -219,18 +264,6 @@ export class Vault {
     // Calculate free collateral
     this.freeCollateralAsEth = this.collateralAsEth.sub(
       this.debtAsEth.mul(this.minimumRatio).div(ethers.constants.WeiPerEther)
-    );
-
-    // Set liquidation fee
-    this.liquidationFee = await this.sdk.contracts.vaultLibrary.getLiquidationFee(
-      this.account,
-      this.token.address
-    );
-
-    // Set minting ratio.
-    this.ratios.minting = await this.sdk.contracts.vaultLibrary.getMinimumRatio(
-      this.account,
-      this.token.address
     );
 
     // Set current and liquidation ratios.
