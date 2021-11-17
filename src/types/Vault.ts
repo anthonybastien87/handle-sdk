@@ -7,7 +7,6 @@ import { CollateralTokens, fxTokens } from "./ProtocolTokens";
 import { tokenAddressToFxToken } from "./utils";
 
 const oneEth = ethers.utils.parseEther("1");
-const zero = ethers.constants.Zero;
 
 // TODO: A WebSocket connection to the graph node must be maintained so that whenever
 // a vault instance has a state change it can be properly updated.
@@ -40,22 +39,22 @@ export class Vault {
     this.sdk = sdk;
     this.token = fxToken;
     this.account = account;
-    this.debt = zero;
-    this.debtAsEth = zero;
+    this.debt = ethers.constants.Zero;
+    this.debtAsEth = ethers.constants.Zero;
     this.collateral = [];
-    this.collateralAsEth = zero;
-    this.freeCollateralAsEth = zero;
-    this.redeemableTokens = zero;
-    this.collateralRatio = zero;
-    this.minimumRatio = zero;
+    this.collateralAsEth = ethers.constants.Zero;
+    this.freeCollateralAsEth = ethers.constants.Zero;
+    this.redeemableTokens = ethers.constants.Zero;
+    this.collateralRatio = ethers.constants.Zero;
+    this.minimumRatio = ethers.constants.Zero;
     this.isRedeemable = false;
     this.isLiquidatable = false;
     this.ratios = {
-      current: zero,
-      minting: zero,
-      liquidation: zero
+      current: ethers.constants.Zero,
+      minting: ethers.constants.Zero,
+      liquidation: ethers.constants.Zero
     };
-    this.liquidationFee = zero;
+    this.liquidationFee = ethers.constants.Zero;
   }
 
   public static async query(sdk: SDK, filter: any): Promise<Vault[]> {
@@ -130,7 +129,7 @@ export class Vault {
     // Set current and liquidation ratios.
     this.ratios.current = this.debtAsEth.gt(0)
       ? this.collateralAsEth.mul(ethers.constants.WeiPerEther).div(this.debtAsEth)
-      : zero;
+      : ethers.constants.Zero;
     this.ratios.liquidation = this.ratios.minting.mul("80").div("100");
     const minLiquidationRatio = ethers.utils.parseEther("1.1");
     if (this.ratios.liquidation.lt(minLiquidationRatio))
@@ -191,7 +190,7 @@ export class Vault {
     );
 
     // Get token price
-    let tokenPrice = zero;
+    let tokenPrice = ethers.constants.Zero;
     promises.push(
       new Promise<void>(async (resolve) => {
         tokenPrice = await this.sdk.contracts.handle.getTokenPrice(this.token.address);
@@ -225,19 +224,19 @@ export class Vault {
 
     // Update collateral tokens.
     this.collateral = [];
-    this.collateralAsEth = zero;
+    this.collateralAsEth = ethers.constants.Zero;
 
     // Get CR
     this.collateralRatio = this.debtAsEth.gt(0)
       ? this.collateralAsEth.mul(oneEth).div(this.debtAsEth)
-      : zero;
+      : ethers.constants.Zero;
 
     // Determine if redeemable
     this.isRedeemable =
       this.collateralRatio.lt(this.minimumRatio) &&
       this.collateralRatio.gte(oneEth) &&
-      this.collateralAsEth.gt(zero) &&
-      this.debt.gt(zero);
+      this.collateralAsEth.gt(ethers.constants.Zero) &&
+      this.debt.gt(ethers.constants.Zero);
 
     if (this.isRedeemable) {
       const redeemableAsEth = this.calculateTokensRequiredForCrIncrease(
@@ -249,10 +248,11 @@ export class Vault {
 
       this.redeemableTokens = this.isRedeemable
         ? redeemableAsEth.mul(oneEth).div(tokenPrice)
-        : zero;
+        : ethers.constants.Zero;
 
       if (this.redeemableTokens.gt(this.debt)) this.redeemableTokens = this.debt;
-    } else if (this.redeemableTokens.gt(zero)) this.redeemableTokens = zero;
+    } else if (this.redeemableTokens.gt(ethers.constants.Zero))
+      this.redeemableTokens = ethers.constants.Zero;
 
     // Determine if liquidatable
     const liquidationRatio = this.minimumRatio.mul("80").div("100");
@@ -485,7 +485,7 @@ export class Vault {
         isRedeemable: true
       }
     });
-    let redeemableCount = zero;
+    let redeemableCount = ethers.constants.Zero;
     let redeemableVaults = [];
     for (let vault of vaults) {
       redeemableCount = redeemableCount.add(vault.redeemableTokens);
