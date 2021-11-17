@@ -198,6 +198,9 @@ export class Vault {
       })
     );
 
+    // Update collateral tokens.
+    this.collateral = [];
+
     for (let coll of this.sdk.protocol.collateralTokens) {
       promises.push(
         new Promise<void>(async (resolve) => {
@@ -221,10 +224,6 @@ export class Vault {
 
     // Update debt as ETH
     this.debtAsEth = this.debt.mul(this.token.rate).div(ethers.constants.WeiPerEther);
-
-    // Update collateral tokens.
-    this.collateral = [];
-    this.collateralAsEth = ethers.constants.Zero;
 
     // Get CR
     this.collateralRatio = this.debtAsEth.gt(0)
@@ -255,7 +254,7 @@ export class Vault {
       this.redeemableTokens = ethers.constants.Zero;
 
     // Determine if liquidatable
-    const liquidationRatio = this.minimumRatio.mul("80").div("100");
+    const liquidationRatio = this.ratios.minting.mul("80").div("100");
     this.isLiquidatable = this.isRedeemable && this.collateralRatio.lt(liquidationRatio);
 
     // If no collateral, no need to set/update the below
@@ -271,6 +270,7 @@ export class Vault {
     const minLiquidationRatio = ethers.utils.parseEther("1.1");
     if (this.ratios.liquidation.lt(minLiquidationRatio))
       this.ratios.liquidation = minLiquidationRatio;
+    console.log("Liquidation:", ethers.utils.formatEther(this.ratios.liquidation));
   }
 
   /** Mints using Ether as collateral */
