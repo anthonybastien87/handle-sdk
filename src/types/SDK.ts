@@ -1,7 +1,7 @@
 import packageJson from "../../package.json";
 import { ethers } from "ethers";
 import { Protocol } from "./Protocol";
-import { Abi, Config } from "./Config";
+import {Abi, Config, NetworkConfig, ValidNetworkConfig} from "./Config";
 import { CollateralTokens, fxTokens, fxTokensArray } from "./ProtocolTokens";
 import { Vault } from "./Vault";
 import { GraphQLClient } from "graphql-request/dist";
@@ -32,6 +32,9 @@ export class SDK {
     fxKeeperPool: ethers.Contract;
     vaultLibrary: ethers.Contract;
     liquidator: ethers.Contract;
+    rewardPool: ethers.Contract;
+    governanceLock: ethers.Contract;
+    forex: ethers.Contract;
     [fxTokens.fxAUD]: ethers.Contract;
     [fxTokens.fxPHP]: ethers.Contract;
     [fxTokens.fxEUR]: ethers.Contract;
@@ -78,7 +81,7 @@ export class SDK {
     );
     const sdk = new SDK(signerOrProvider, networkConfig.theGraphEndpoint);
     sdk.network = (await sdk.provider.getNetwork()).name;
-    await sdk.loadContracts(networkConfig.handleAddress);
+    await sdk.loadContracts(networkConfig);
     sdk.initialiseKeeperPools();
     sdk.protocol = await Protocol.from(sdk);
     sdk.trigger(Events.Load, signerOrProvider);
@@ -121,7 +124,7 @@ export class SDK {
     network: ethers.providers.Network,
     handle?: string,
     subgraphEndpoint?: string
-  ) {
+  ): ValidNetworkConfig {
     const defaultConfig = Config.getNetworkConfig(network);
     const handleAddress = handle ?? defaultConfig.handleAddress;
     if (handleAddress == null)
@@ -136,13 +139,15 @@ export class SDK {
           " Please pass this (otherwise optional) parameter when creating the SDK object."
       );
     return {
-      networkName: network.name,
-      handleAddress,
-      theGraphEndpoint
-    };
+      ...defaultConfig,
+      handleAddress
+    } as ValidNetworkConfig;
   }
 
-  private async loadContracts(handle: string) {
+  private async loadContracts(config: NetworkConfig) {
+    if (!config.handleAddress)
+      throw new Error("Config passed to loadContracts does not contain " +
+        "handle contract");
     // @ts-ignore
     this.contracts = {};
     /** Type for local config of contracts to load */
@@ -152,7 +157,7 @@ export class SDK {
         name: "handle",
         abi: Abi.Handle,
         // @ts-ignore
-        addressGetter: async () => handle
+        addressGetter: async () => config.handleAddress
       },
       {
         name: "comptroller",
@@ -183,6 +188,24 @@ export class SDK {
         abi: Abi.Liquidator,
         // @ts-ignore
         addressGetter: async () => await this.contracts.handle.liquidator()
+      },
+      {
+        name: "rewardPool",
+        abi: Abi.RewardPool,
+        // @ts-ignore
+        addressGetter: async () => await this.contracts.handle.rewards() 
+      },
+      {
+        name: "forex",
+        abi: Abi.ERC20,
+        // @ts-ignore
+        addressGetter: async () => await this.contracts.handle.forex() 
+      },
+      {
+        name: "governanceLock",
+        abi: Abi.GovernanceLock,
+        // @ts-ignore
+        addressGetter: async () => config.governanceLockAddress 
       }
     ];
     const setContract = async (obj: ContractObj) => {
@@ -202,7 +225,10 @@ export class SDK {
       promises.push(setContract(contractsToLoad[i]));
     }
     // Load ERC20s for fxTokens and collateral tokens.
-    const { fxTokens, collateralTokens } = await readTokenRegistry(this.gqlClient, handle);
+    const { fxTokens, collateralTokens } = await readTokenRegistry(
+      this.gqlClient,
+      config.handleAddress
+    );
     if (!(fxTokens?.length > 0)) throw new Error("Could not fetch fxTokens from Handle subgraph");
     const erc20s = [...fxTokens, ...collateralTokens];
     for (let erc20 of erc20s) {
