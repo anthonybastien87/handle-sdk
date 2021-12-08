@@ -368,6 +368,6 @@ export class Convert {
       polygon: 137,
       arbitrum: 42161
     };
-    return `https://api.1inch.exchange/v3.0/${networkNameToIdMap[this.network]}`;
+    return `https://api.1inch.exchange/v4.0/${networkNameToIdMap[this.network]}`;
   };
 }

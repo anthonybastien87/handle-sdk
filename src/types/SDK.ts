@@ -30,6 +30,7 @@ export class SDK {
     comptroller: ethers.Contract;
     treasury: ethers.Contract;
     fxKeeperPool: ethers.Contract;
+    fxTransformer: ethers.Contract;
     vaultLibrary: ethers.Contract;
     liquidator: ethers.Contract;
     rewardPool: ethers.Contract;
@@ -206,6 +207,12 @@ export class SDK {
         abi: Abi.GovernanceLock,
         // @ts-ignore
         addressGetter: async () => config.governanceLockAddress 
+      },
+      {
+        name: "fxTransformer",
+        abi: Abi.fxTransformer,
+        // @ts-ignore
+        addressGetter: async () => config.fxTransformerAddress 
       }
     ];
     const setContract = async (obj: ContractObj) => {
