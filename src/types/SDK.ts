@@ -44,6 +44,7 @@ export class SDK {
     [CollateralTokens.WETH]: ethers.Contract;
     [CollateralTokens.WBTC]: ethers.Contract;
     [CollateralTokens.DAI]: ethers.Contract;
+    [CollateralTokens.FOREX]: ethers.Contract;
   };
   public keeperPools: { [fxTokenSymbol: string]: fxKeeperPool };
   public gqlClient: GraphQLClient;
