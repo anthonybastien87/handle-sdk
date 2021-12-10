@@ -1,0 +1,63 @@
+import { FxTokenSymbolMap } from "./types/fxTokens";
+import { NetworkMap } from "./types/web3";
+
+export type FxTokenAddresses = FxTokenSymbolMap<string>;
+
+export type Config = {
+  forexAddress: string;
+  fxTokenAddresses: FxTokenAddresses;
+  byNetwork: {
+    arbitrum: {
+      addresses: {
+        chainlinkFeeds: ChainlinkFeeds;
+      };
+      theGraphEndpoint: string;
+    };
+  };
+  networkNameToId: NetworkMap<number>;
+};
+
+export type ChainlinkFeeds = {
+  eth_usd: string;
+  aud_usd: string;
+  php_usd: string;
+  usd_usd: string;
+  eur_usd: string;
+  krw_usd: string;
+  cny_usd: string;
+};
+
+const config: Config = {
+  forexAddress: "0xDb298285FE4C5410B05390cA80e8Fbe9DE1F259B",
+  fxTokenAddresses: {
+    fxAUD: "0x7E141940932E3D13bfa54B224cb4a16510519308",
+    fxPHP: "0x3d147cD9aC957B2a5F968dE9d1c6B9d0872286a0",
+    fxUSD: "0x8616E8EA83f048ab9A5eC513c9412Dd2993bcE3F",
+    fxEUR: "0x116172B2482c5dC3E6f445C16Ac13367aC3FCd35",
+    fxKRW: "0xF4E8BA79d058fFf263Fd043Ef50e1010c1BdF991",
+    fxCNY: "0x2C29daAce6Aa05e3b65743EFd61f8A2C448302a3"
+  },
+  byNetwork: {
+    arbitrum: {
+      addresses: {
+        chainlinkFeeds: {
+          eth_usd: "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612",
+          aud_usd: "0x9854e9a850e7c354c1de177ea953a6b1fba8fc22",
+          php_usd: "0xff82aaf635645fd0bcc7b619c3f28004cdb58574",
+          usd_usd: "0xd558Dd65583F7118F9ED921e8b94Ae3A295C83Bb",
+          eur_usd: "0xa14d53bc1f1c0f31b4aa3bd109344e5009051a84",
+          krw_usd: "0x85bb02e0ae286600d1c68bb6ce22cc998d411916",
+          cny_usd: "0xcc3370bde6afe51e1205a5038947b9836371eccb"
+        }
+      },
+      theGraphEndpoint: "https://api.thegraph.com/subgraphs/name/handle-fi/handle"
+    }
+  },
+  networkNameToId: {
+    ethereum: 1,
+    arbitrum: 42161,
+    polygon: 137
+  }
+};
+
+export default config;
