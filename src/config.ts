@@ -9,12 +9,18 @@ export type Config = {
   byNetwork: {
     arbitrum: {
       addresses: {
+        protocol: ProtocolAddresses;
         chainlinkFeeds: ChainlinkFeeds;
       };
       theGraphEndpoint: string;
     };
   };
   networkNameToId: NetworkMap<number>;
+};
+
+export type ProtocolAddresses = {
+  handle: string;
+  vaultLibrary: string;
 };
 
 export type ChainlinkFeeds = {
@@ -40,6 +46,10 @@ const config: Config = {
   byNetwork: {
     arbitrum: {
       addresses: {
+        protocol: {
+          handle: "0xA112D1bFd43fcFbF2bE2eBFcaebD6B6DB73aaD8B",
+          vaultLibrary: "0xeaE0f01393114Dfc95c82AafB227f31ba5ECf886"
+        },
         chainlinkFeeds: {
           eth_usd: "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612",
           aud_usd: "0x9854e9a850e7c354c1de177ea953a6b1fba8fc22",

@@ -1,8 +1,8 @@
 import config from "../../config";
 import { GraphQLClient } from "graphql-request/dist";
-import FxTokenGraphClient, { IndexedFxTokenData } from "./clients/FxTokenGraphClient";
-import VaultGraphClient, { IndexedVaultData } from "./clients/VaultGraphClient";
-import FxKeeperPoolClient, { IndexedFxKeeperPoolData } from "./clients/FxKeeperPoolClient";
+import FxTokenGraphClient, { IndexedFxToken } from "./clients/FxTokenGraphClient";
+import VaultGraphClient, { IndexedVault } from "./clients/VaultGraphClient";
+import FxKeeperPoolClient, { IndexedFxKeeperPool } from "./clients/FxKeeperPoolClient";
 
 type SupportedNetwork = "arbitrum";
 const SUPPORTED_NETWORKS: SupportedNetwork[] = ["arbitrum"];
@@ -28,4 +28,4 @@ export default class Graph {
   }
 }
 
-export type { IndexedFxTokenData, IndexedVaultData, IndexedFxKeeperPoolData };
+export type { IndexedFxToken, IndexedVault, IndexedFxKeeperPool };
