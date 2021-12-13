@@ -9,7 +9,8 @@
 export enum CollateralTokens {
   WETH = "WETH",
   WBTC = "WBTC",
-  DAI = "DAI"
+  DAI = "DAI",
+  FOREX = "FOREX"
 }
 
 export const fxTokensArray = (() => {
