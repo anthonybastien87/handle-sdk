@@ -3,7 +3,8 @@
   fxEUR = "fxEUR",
   fxKRW = "fxKRW",
   fxCNY = "fxCNY",
-  fxPHP = "fxPHP"
+  fxPHP = "fxPHP",
+  fxUSD = "fxUSD"
 }
 
 export enum CollateralTokens {

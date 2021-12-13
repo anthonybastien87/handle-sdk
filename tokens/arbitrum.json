@@ -160,6 +160,14 @@
     "displayDecimals": 4
   },
   {
+    "symbol": "fxUSD",
+    "name": "handleUSD",
+    "address": "0x8616E8EA83f048ab9A5eC513c9412Dd2993bcE3F",
+    "decimals": 18,
+    "icon": "https://app.handle.fi/fxUSDDarkLogo.png",
+    "displayDecimals": 4
+  },
+  {
     "symbol": "GMX",
     "name": "GMX",
     "decimals": 18,
