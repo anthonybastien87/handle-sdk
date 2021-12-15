@@ -8,8 +8,10 @@ export default class VaultsWithConfig extends Vaults {
     super(
       signer,
       config || {
-        protocol: sdkConfig.byNetwork.arbitrum.addresses.protocol,
-        fxTokenAddress: sdkConfig.fxTokenAddresses
+        protocolAddress: sdkConfig.byNetwork.arbitrum.addresses.protocol,
+        fxTokenAddress: sdkConfig.fxTokenAddresses,
+        collateralAddresses: sdkConfig.byNetwork.arbitrum.addresses.collaterals,
+        chainId: sdkConfig.networkNameToId.arbitrum
       }
     );
   }

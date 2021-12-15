@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { FxTokenSymbol, FxTokenSymbolMap } from "..";
 import config, { ChainlinkFeeds } from "../config";
-import { ChainlinkAggregator__factory } from "../types/abi";
+import { ChainlinkAggregator__factory } from "../contracts";
 
 type SupportedNetwork = "arbitrum";
 

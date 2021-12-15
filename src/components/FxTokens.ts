@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
 import config, { FxTokenAddresses } from "../config";
-import { ERC20, ERC20__factory } from "../types/abi";
+import { ERC20, ERC20__factory } from "../contracts";
 import { FxTokenSymbol, FxTokenSymbolMap } from "../types/fxTokens";
-import { getAvailableTokens } from "../utils/fxTokens";
+import { getAvailableAddresses } from "../utils/fxTokens";
 
 export default class FxTokens {
   public contracts: FxTokenSymbolMap<ERC20>;
@@ -11,7 +11,7 @@ export default class FxTokens {
   constructor(private signer: ethers.Signer, addresses?: FxTokenAddresses) {
     const addressesToUse = addresses || config.fxTokenAddresses;
     this.contracts = this.createFxTokenContracts(addressesToUse);
-    this.availableTokens = getAvailableTokens(addressesToUse);
+    this.availableTokens = getAvailableAddresses(addressesToUse);
   }
 
   private createFxTokenContracts = (addresses: FxTokenAddresses) => {

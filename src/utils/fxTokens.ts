@@ -1,9 +1,16 @@
-import { FxTokenSymbol } from "..";
-import { FxTokenAddresses } from "../config";
+export const getAvailableAddresses = <T>(
+  addresses: Partial<T>
+): {
+  symbol: keyof T;
+  address: string;
+}[] => {
+  return (Object.keys(addresses) as []).map((key) => {
+    const k = key as any;
+    const a = addresses as any;
 
-export const getAvailableTokens = (addresses: FxTokenAddresses) => {
-  return (Object.keys(addresses) as FxTokenSymbol[]).map((symbol) => ({
-    symbol,
-    address: addresses[symbol]
-  }));
+    return {
+      symbol: key,
+      address: a[k]
+    };
+  });
 };

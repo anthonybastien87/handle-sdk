@@ -1,7 +1,9 @@
+import { CollateralSymbolMap } from "./types/collaterals";
 import { FxTokenSymbolMap } from "./types/fxTokens";
 import { NetworkMap } from "./types/web3";
 
 export type FxTokenAddresses = FxTokenSymbolMap<string>;
+export type CollateralAddresses = CollateralSymbolMap<string>;
 
 export type Config = {
   forexAddress: string;
@@ -11,6 +13,7 @@ export type Config = {
       addresses: {
         protocol: ProtocolAddresses;
         chainlinkFeeds: ChainlinkFeeds;
+        collaterals: CollateralAddresses;
       };
       theGraphEndpoint: string;
     };
@@ -58,6 +61,10 @@ const config: Config = {
           eur_usd: "0xa14d53bc1f1c0f31b4aa3bd109344e5009051a84",
           krw_usd: "0x85bb02e0ae286600d1c68bb6ce22cc998d411916",
           cny_usd: "0xcc3370bde6afe51e1205a5038947b9836371eccb"
+        },
+        collaterals: {
+          FOREX: "0xdb298285fe4c5410b05390ca80e8fbe9de1f259b",
+          WETH: "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
         }
       },
       theGraphEndpoint: "https://api.thegraph.com/subgraphs/name/handle-fi/handle"
