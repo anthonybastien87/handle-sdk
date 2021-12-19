@@ -140,7 +140,7 @@
     "name": "handleAUD",
     "address": "0x7E141940932E3D13bfa54B224cb4a16510519308",
     "decimals": 18,
-    "icon": "https://app.handle.fi/fxAUDDarkLogo.png",
+    "icon": "https://app.handle.fi/fxAUDLogo.png",
     "displayDecimals": 4
   },
   {
@@ -148,7 +148,7 @@
     "name": "handleEUR",
     "address": "0x116172B2482c5dC3E6f445C16Ac13367aC3FCd35",
     "decimals": 18,
-    "icon": "https://app.handle.fi/fxEURDarkLogo.png",
+    "icon": "https://app.handle.fi/fxEURLogo.png",
     "displayDecimals": 4
   },
   {
@@ -156,7 +156,7 @@
     "name": "handlePHP",
     "address": "0x3d147cD9aC957B2a5F968dE9d1c6B9d0872286a0",
     "decimals": 18,
-    "icon": "https://app.handle.fi/fxPHPDarkLogo.png",
+    "icon": "https://app.handle.fi/fxPHPLogo.png",
     "displayDecimals": 4
   },
   {
@@ -164,7 +164,7 @@
     "name": "handleUSD",
     "address": "0x8616E8EA83f048ab9A5eC513c9412Dd2993bcE3F",
     "decimals": 18,
-    "icon": "https://app.handle.fi/fxUSDDarkLogo.png",
+    "icon": "https://app.handle.fi/fxUSDLogo.png",
     "displayDecimals": 4
   },
   {
