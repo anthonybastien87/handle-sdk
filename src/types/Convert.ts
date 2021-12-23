@@ -326,6 +326,10 @@ export class Convert {
     const STABLE_TO_STABLE_FEE = 0.1;
     const NON_STABLE_FEE = 0.3;
 
+    if (this.network === "arbitrum") {
+      return 0;
+    }
+
     if (!this.tokenAddressToType) {
       await this.setTokenAddressToType();
     }
